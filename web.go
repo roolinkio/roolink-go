@@ -1,6 +1,7 @@
 package roolink
 
 import (
+	"context"
 	"fmt"
 )
 
@@ -94,10 +95,10 @@ type ParseResponse struct {
 }
 
 // GenerateWebSensor generates an Akamai web sensor
-func (c *Client) GenerateWebSensor(req WebSensorRequest) (*WebSensorResponse, error) {
+func (c *Client) GenerateWebSensor(ctx context.Context, req WebSensorRequest) (*WebSensorResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/sensor", DefaultWebBaseURL)
 
-	resp, err := c.doRequest("POST", url, req)
+	resp, err := c.doRequest(ctx, "POST", url, req)
 	if err != nil {
 		return nil, err
 	}
@@ -111,10 +112,10 @@ func (c *Client) GenerateWebSensor(req WebSensorRequest) (*WebSensorResponse, er
 }
 
 // GeneratePixel generates pixel sensor data
-func (c *Client) GeneratePixel(req PixelRequest) (*PixelResponse, error) {
+func (c *Client) GeneratePixel(ctx context.Context, req PixelRequest) (*PixelResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/pixel", DefaultWebBaseURL)
 
-	resp, err := c.doRequest("POST", url, req)
+	resp, err := c.doRequest(ctx, "POST", url, req)
 	if err != nil {
 		return nil, err
 	}
@@ -128,10 +129,10 @@ func (c *Client) GeneratePixel(req PixelRequest) (*PixelResponse, error) {
 }
 
 // SolveSecCpt solves a sec-cpt crypto challenge
-func (c *Client) SolveSecCpt(req SecCptRequest) (*SecCptResponse, error) {
+func (c *Client) SolveSecCpt(ctx context.Context, req SecCptRequest) (*SecCptResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/sec-cpt", DefaultWebBaseURL)
 
-	resp, err := c.doRequest("POST", url, req)
+	resp, err := c.doRequest(ctx, "POST", url, req)
 	if err != nil {
 		return nil, err
 	}
@@ -145,10 +146,10 @@ func (c *Client) SolveSecCpt(req SecCptRequest) (*SecCptResponse, error) {
 }
 
 // SolveSBSD solves an SBSD challenge
-func (c *Client) SolveSBSD(req SBSDRequest) (*SBSDResponse, error) {
+func (c *Client) SolveSBSD(ctx context.Context, req SBSDRequest) (*SBSDResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/sbsd", DefaultWebBaseURL)
 
-	resp, err := c.doRequest("POST", url, req)
+	resp, err := c.doRequest(ctx, "POST", url, req)
 	if err != nil {
 		return nil, err
 	}
@@ -162,14 +163,14 @@ func (c *Client) SolveSBSD(req SBSDRequest) (*SBSDResponse, error) {
 }
 
 // ParseScript parses an Akamai script and returns script data
-func (c *Client) ParseScript(scriptContent []byte) (*ParseResponse, error) {
+func (c *Client) ParseScript(ctx context.Context, scriptContent []byte) (*ParseResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/parse", DefaultWebBaseURL)
 
 	req := map[string]string{
 		"scriptContent": string(scriptContent),
 	}
 
-	resp, err := c.doRequest("POST", url, req)
+	resp, err := c.doRequest(ctx, "POST", url, req)
 	if err != nil {
 		return nil, err
 	}

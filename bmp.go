@@ -1,6 +1,7 @@
 package roolink
 
 import (
+	"context"
 	"fmt"
 )
 
@@ -47,10 +48,10 @@ type BMPSensorResponse struct {
 }
 
 // GenerateBMPSensor generates an Akamai BMP sensor for mobile apps
-func (c *Client) GenerateBMPSensor(req BMPSensorRequest) (*BMPSensorResponse, error) {
+func (c *Client) GenerateBMPSensor(ctx context.Context, req BMPSensorRequest) (*BMPSensorResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/sensor", DefaultBMPBaseURL)
 
-	resp, err := c.doRequest("POST", url, req)
+	resp, err := c.doRequest(ctx, "POST", url, req)
 	if err != nil {
 		return nil, err
 	}

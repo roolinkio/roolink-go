@@ -2,6 +2,7 @@ package roolink
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -60,7 +61,7 @@ func NewClient(apiKey string, opts ...ClientOption) *Client {
 }
 
 // doRequest performs an HTTP request with the API key
-func (c *Client) doRequest(method, url string, body interface{}) (*http.Response, error) {
+func (c *Client) doRequest(ctx context.Context, method, url string, body interface{}) (*http.Response, error) {
 	var reqBody io.Reader
 	if body != nil {
 		jsonData, err := json.Marshal(body)
@@ -70,13 +71,12 @@ func (c *Client) doRequest(method, url string, body interface{}) (*http.Response
 		reqBody = bytes.NewBuffer(jsonData)
 	}
 
-	req, err := http.NewRequest(method, url, reqBody)
+	req, err := http.NewRequestWithContext(ctx, method, url, reqBody)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept-Encoding", "gzip, deflate, br")
 	req.Header.Set("x-api-key", c.apiKey)
 
 	resp, err := c.httpClient.Do(req)
