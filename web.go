@@ -1,6 +1,7 @@
 package roolink
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 )
@@ -84,11 +85,6 @@ type SBSDResponse struct {
 	Body string `json:"body"`
 }
 
-// ParseRequest represents a request to parse Akamai script
-type ParseRequest struct {
-	ScriptContent string `json:"scriptContent"`
-}
-
 // ParseResponse represents the response from script parsing
 type ParseResponse struct {
 	ScriptData ScriptData `json:"scriptData"`
@@ -163,19 +159,15 @@ func (c *Client) SolveSBSD(ctx context.Context, req SBSDRequest) (*SBSDResponse,
 }
 
 // ParseScript parses an Akamai script and returns script data
-func (c *Client) ParseScript(ctx context.Context, scriptContent []byte) (*ParseResponse, error) {
+func (c *Client) ParseScript(ctx context.Context, scriptContent []byte) (*ScriptData, error) {
 	url := fmt.Sprintf("%s/api/v1/parse", DefaultWebBaseURL)
 
-	req := map[string]string{
-		"scriptContent": string(scriptContent),
-	}
-
-	resp, err := c.doRequest(ctx, "POST", url, req)
+	resp, err := c.doRequest(ctx, "POST", url, bytes.NewBuffer(scriptContent))
 	if err != nil {
 		return nil, err
 	}
 
-	var result ParseResponse
+	var result ScriptData
 	if err := parseResponse(resp, &result); err != nil {
 		return nil, err
 	}
