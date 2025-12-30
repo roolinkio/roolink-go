@@ -3,6 +3,7 @@ package roolink
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
@@ -85,16 +86,16 @@ type SBSDResponse struct {
 	Body string `json:"body"`
 }
 
-// ParseResponse represents the response from script parsing
-type ParseResponse struct {
-	ScriptData ScriptData `json:"scriptData"`
-}
-
 // GenerateWebSensor generates an Akamai web sensor
 func (c *Client) GenerateWebSensor(ctx context.Context, req WebSensorRequest) (*WebSensorResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/sensor", DefaultWebBaseURL)
 
-	resp, err := c.doRequest(ctx, "POST", url, req)
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	resp, err := c.doRequest(ctx, "POST", url, bytes.NewBuffer(jsonData), "application/json")
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +112,12 @@ func (c *Client) GenerateWebSensor(ctx context.Context, req WebSensorRequest) (*
 func (c *Client) GeneratePixel(ctx context.Context, req PixelRequest) (*PixelResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/pixel", DefaultWebBaseURL)
 
-	resp, err := c.doRequest(ctx, "POST", url, req)
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	resp, err := c.doRequest(ctx, "POST", url, bytes.NewBuffer(jsonData), "application/json")
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +134,12 @@ func (c *Client) GeneratePixel(ctx context.Context, req PixelRequest) (*PixelRes
 func (c *Client) SolveSecCpt(ctx context.Context, req SecCptRequest) (*SecCptResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/sec-cpt", DefaultWebBaseURL)
 
-	resp, err := c.doRequest(ctx, "POST", url, req)
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	resp, err := c.doRequest(ctx, "POST", url, bytes.NewBuffer(jsonData), "application/json")
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +156,12 @@ func (c *Client) SolveSecCpt(ctx context.Context, req SecCptRequest) (*SecCptRes
 func (c *Client) SolveSBSD(ctx context.Context, req SBSDRequest) (*SBSDResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/sbsd", DefaultWebBaseURL)
 
-	resp, err := c.doRequest(ctx, "POST", url, req)
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	resp, err := c.doRequest(ctx, "POST", url, bytes.NewBuffer(jsonData), "application/json")
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +178,7 @@ func (c *Client) SolveSBSD(ctx context.Context, req SBSDRequest) (*SBSDResponse,
 func (c *Client) ParseScript(ctx context.Context, scriptContent []byte) (*ScriptData, error) {
 	url := fmt.Sprintf("%s/api/v1/parse", DefaultWebBaseURL)
 
-	resp, err := c.doRequest(ctx, "POST", url, bytes.NewBuffer(scriptContent))
+	resp, err := c.doRequest(ctx, "POST", url, bytes.NewBuffer(scriptContent), "text/plain")
 	if err != nil {
 		return nil, err
 	}

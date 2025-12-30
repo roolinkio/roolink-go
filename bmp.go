@@ -1,7 +1,9 @@
 package roolink
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
@@ -52,7 +54,12 @@ type BMPSensorResponse struct {
 func (c *Client) GenerateBMPSensor(ctx context.Context, req BMPSensorRequest) (*BMPSensorResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/sensor", DefaultBMPBaseURL)
 
-	resp, err := c.doRequest(ctx, "POST", url, req)
+	jsonData, err := json.Marshal(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	resp, err := c.doRequest(ctx, "POST", url, bytes.NewBuffer(jsonData), "application/json")
 	if err != nil {
 		return nil, err
 	}
