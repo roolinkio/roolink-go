@@ -10,6 +10,7 @@ type BMPSensorRequest struct {
 	AppName  string `json:"app"`
 	Proxy    string `json:"proxy"`
 	Language string `json:"language,omitempty"`
+	DeviceID string `json:"deviceId,omitempty"`
 	Android  bool   `json:"android,omitempty"`
 	IPad     bool   `json:"ipad,omitempty"`
 }
