@@ -59,6 +59,7 @@ type SecCptRequest struct {
 	Timestamp      int    `json:"timestamp"`
 	Nonce          string `json:"nonce"`
 	Difficulty     int64  `json:"difficulty"`
+	Count          int    `json:"count,omitempty"`
 	Timeout        int64  `json:"timeout,omitempty"`
 	CPU            bool   `json:"cpu,omitempty"`
 	Cookie         string `json:"cookie"`
