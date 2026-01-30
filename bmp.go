@@ -45,7 +45,7 @@ type BMPSensorResponse struct {
 	// Common fields
 	DeviceID       string `json:"deviceId"`
 	AppVersion     string `json:"appVersion"`
-	AppVersionCode string `json:"appVersionCode,omitempty"`
+	AppVersionCode int 	  `json:"appVersionCode,omitempty"`
 	ScreenHeight   int    `json:"screenHeight"`
 	ScreenWidth    int    `json:"screenWidth"`
 	Language       string `json:"language"`
