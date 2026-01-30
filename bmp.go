@@ -43,11 +43,12 @@ type BMPSensorResponse struct {
 	SDKVersion         string `json:"sdkVersion,omitempty"`
 
 	// Common fields
-	DeviceID     string `json:"deviceId"`
-	AppVersion   string `json:"appVersion"`
-	ScreenHeight int    `json:"screenHeight"`
-	ScreenWidth  int    `json:"screenWidth"`
-	Language     string `json:"language"`
+	DeviceID       string `json:"deviceId"`
+	AppVersion     string `json:"appVersion"`
+	AppVersionCode string `json:"appVersionCode,omitempty"`
+	ScreenHeight   int    `json:"screenHeight"`
+	ScreenWidth    int    `json:"screenWidth"`
+	Language       string `json:"language"`
 }
 
 // GenerateBMPSensor generates an Akamai BMP sensor for mobile apps
