@@ -80,6 +80,7 @@ type SBSDRequest struct {
 	Url        string `json:"url"`
 	ScriptHash string `json:"script_hash,omitempty"`
 	ScriptUrl  string `json:"script_url,omitempty"`
+	Language   string `json:"language,omitempty"`
 }
 
 // SBSDResponse represents the response from SBSD challenge
