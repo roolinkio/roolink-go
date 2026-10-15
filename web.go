@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 )
 
 // ScriptData represents parsed Akamai script configuration data
@@ -124,12 +125,16 @@ func (c *Client) GeneratePixel(ctx context.Context, req PixelRequest) (*PixelRes
 		return nil, err
 	}
 
-	var result PixelResponse
-	if err := parseResponse(resp, &result); err != nil {
-		return nil, err
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response: %w", err)
+	}
+	if resp.StatusCode >= 400 {
+		return nil, fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(body))
 	}
 
-	return &result, nil
+	return &PixelResponse{Sensor: string(body)}, nil
 }
 
 // SolveSecCpt solves a sec-cpt crypto challenge
