@@ -1,19 +1,28 @@
+# Publishes a GitHub release for each version tag, which arrives with its release commit. Go's module proxy serves the version from the tag itself.
 name: release
 
 on:
   push:
-    branches: [main]
+    tags: ["v*"]
+
+permissions: {}
 
 jobs:
-  release-please:
+  github-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
-    outputs:
-      created: ${{ steps.release.outputs.release_created }}
     steps:
-      - uses: googleapis/release-please-action@v4
-        id: release
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          skip-github-pull-request: true
+          fetch-depth: 0
+          persist-credentials: false
+      # The notes list the commits since the previous version, without the release commit itself.
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          previous="$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || true)"
+          git log --no-merges --format='- %s' "${previous:+${previous}..}${TAG}" | grep -v '^- chore: release ' > notes.md || true
+          gh release create "${TAG}" --verify-tag --title "${TAG}" --notes-file notes.md

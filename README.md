@@ -19,10 +19,10 @@ Production-ready APIs for generating Akamai sensor data across web and mobile pl
 
 ### 🎯 Supported Services
 
-| Service | Features |
-|---------|----------|
+| Service        | Features                                                   |
+| -------------- | ---------------------------------------------------------- |
 | **🌐 Web API** | Sensor generation, pixel challenges, SBSD, sec-cpt solving |
-| **📱 BMP API** | iOS & Android mobile app sensor generation |
+| **📱 BMP API** | iOS & Android mobile app sensor generation                 |
 
 ---
 

@@ -78,9 +78,9 @@ type SBSDRequest struct {
 	UserAgent  string `json:"userAgent"`
 	BmO        string `json:"bm_o"`
 	Legacy     bool   `json:"legacy,omitempty"`
-	Url        string `json:"url"`
+	Url        string `json:"url"` //nolint:ST1003 // Exported, so renaming it would break callers.
 	ScriptHash string `json:"script_hash,omitempty"`
-	ScriptUrl  string `json:"script_url,omitempty"`
+	ScriptUrl  string `json:"script_url,omitempty"` //nolint:ST1003 // Exported, so renaming it would break callers.
 	Language   string `json:"language,omitempty"`
 }
 
@@ -125,7 +125,7 @@ func (c *Client) GeneratePixel(ctx context.Context, req PixelRequest) (*PixelRes
 		return nil, err
 	}
 
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck // A failed close leaves nothing for the caller to handle.
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response: %w", err)

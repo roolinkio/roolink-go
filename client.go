@@ -79,7 +79,7 @@ func (c *Client) doRequest(ctx context.Context, method, url string, body io.Read
 
 // parseResponse parses the HTTP response into the target struct
 func parseResponse(resp *http.Response, target interface{}) error {
-	defer resp.Body.Close()
+	defer resp.Body.Close() //nolint:errcheck // A failed close leaves nothing for the caller to handle.
 
 	if resp.StatusCode >= 400 {
 		bodyBytes, _ := io.ReadAll(resp.Body)
