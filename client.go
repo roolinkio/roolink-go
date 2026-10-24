@@ -8,8 +8,6 @@ import (
 	"io"
 	"net/http"
 	"time"
-
-	"golang.org/x/net/http2"
 )
 
 const (
@@ -40,8 +38,9 @@ func WithHTTPClient(httpClient *http.Client) ClientOption {
 // NewClient creates a new Roolink client
 func NewClient(apiKey string, opts ...ClientOption) *Client {
 	// Configure HTTP/2 transport
-	transport := &http2.Transport{
-		TLSClientConfig: &tls.Config{},
+	transport := &http.Transport{
+		ForceAttemptHTTP2: true,
+		TLSClientConfig:   &tls.Config{},
 	}
 
 	client := &Client{
@@ -59,9 +58,9 @@ func NewClient(apiKey string, opts ...ClientOption) *Client {
 	return client
 }
 
-// doRequest performs an HTTP request with the API key
-func (c *Client) doRequest(ctx context.Context, method, url string, body io.Reader, contentType string) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(ctx, method, url, body)
+// doRequest performs a POST request with the API key
+func (c *Client) doRequest(ctx context.Context, url string, body io.Reader, contentType string) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}

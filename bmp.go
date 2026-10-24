@@ -60,7 +60,7 @@ func (c *Client) GenerateBMPSensor(ctx context.Context, req BMPSensorRequest) (*
 		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	resp, err := c.doRequest(ctx, "POST", url, bytes.NewBuffer(jsonData), "application/json")
+	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json")
 	if err != nil {
 		return nil, err
 	}
