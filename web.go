@@ -98,7 +98,7 @@ func (c *Client) GenerateWebSensor(ctx context.Context, req WebSensorRequest) (*
 		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json")
+	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json", false)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +120,7 @@ func (c *Client) GeneratePixel(ctx context.Context, req PixelRequest) (*PixelRes
 		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json")
+	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json", false)
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +146,7 @@ func (c *Client) SolveSecCpt(ctx context.Context, req SecCptRequest) (*SecCptRes
 		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json")
+	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json", false)
 	if err != nil {
 		return nil, err
 	}
@@ -168,7 +168,7 @@ func (c *Client) SolveSBSD(ctx context.Context, req SBSDRequest) (*SBSDResponse,
 		return nil, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json")
+	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json", false)
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +185,7 @@ func (c *Client) SolveSBSD(ctx context.Context, req SBSDRequest) (*SBSDResponse,
 func (c *Client) ParseScript(ctx context.Context, scriptContent []byte) (*ScriptData, error) {
 	url := fmt.Sprintf("%s/api/v1/parse", DefaultWebBaseURL)
 
-	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(scriptContent), "text/plain")
+	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(scriptContent), "text/plain", c.compress)
 	if err != nil {
 		return nil, err
 	}
