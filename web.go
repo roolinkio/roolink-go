@@ -8,7 +8,6 @@ import (
 	"io"
 )
 
-// ScriptData represents parsed Akamai script configuration data
 type ScriptData struct {
 	Ver string `json:"ver"`
 	Key int64  `json:"key"`
@@ -16,7 +15,6 @@ type ScriptData struct {
 	Din []int  `json:"din"`
 }
 
-// WebSensorRequest represents a request to generate an Akamai web sensor
 type WebSensorRequest struct {
 	UserAgent  string      `json:"userAgent"`
 	URL        string      `json:"url"`
@@ -33,24 +31,20 @@ type WebSensorRequest struct {
 	ScriptURL  string      `json:"scriptUrl,omitempty"`
 }
 
-// WebSensorResponse represents the response from web sensor generation
 type WebSensorResponse struct {
 	Sensor string `json:"sensor"`
 }
 
-// PixelRequest represents a request to generate pixel data
 type PixelRequest struct {
 	UserAgent            string `json:"userAgent"`
 	Bazadebezolkohpepadr int    `json:"bazadebezolkohpepadr"`
 	Hash                 string `json:"hash"`
 }
 
-// PixelResponse represents the response from pixel generation
 type PixelResponse struct {
 	Sensor string `json:"sensor"`
 }
 
-// SecCptRequest represents a request to solve a sec-cpt challenge
 type SecCptRequest struct {
 	SecCpChallenge string `json:"sec-cp-challenge,omitempty"`
 	Provider       string `json:"provider,omitempty"`
@@ -66,13 +60,11 @@ type SecCptRequest struct {
 	Cookie         string `json:"cookie"`
 }
 
-// SecCptResponse represents the response from sec-cpt challenge
 type SecCptResponse struct {
 	Token   string   `json:"token"`
 	Answers []string `json:"answers"`
 }
 
-// SBSDRequest represents a request to solve SBSD challenge
 type SBSDRequest struct {
 	Vid        string `json:"vid"`
 	UserAgent  string `json:"userAgent"`
@@ -84,12 +76,10 @@ type SBSDRequest struct {
 	Language   string `json:"language,omitempty"`
 }
 
-// SBSDResponse represents the response from SBSD challenge
 type SBSDResponse struct {
 	Body string `json:"body"`
 }
 
-// GenerateWebSensor generates an Akamai web sensor
 func (c *Client) GenerateWebSensor(ctx context.Context, req WebSensorRequest) (*WebSensorResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/sensor", DefaultWebBaseURL)
 
@@ -111,7 +101,7 @@ func (c *Client) GenerateWebSensor(ctx context.Context, req WebSensorRequest) (*
 	return &result, nil
 }
 
-// GeneratePixel generates pixel sensor data
+// GeneratePixel posts a pixel request and reads the text/plain sensor response.
 func (c *Client) GeneratePixel(ctx context.Context, req PixelRequest) (*PixelResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/pixel", DefaultWebBaseURL)
 
@@ -137,7 +127,6 @@ func (c *Client) GeneratePixel(ctx context.Context, req PixelRequest) (*PixelRes
 	return &PixelResponse{Sensor: string(body)}, nil
 }
 
-// SolveSecCpt solves a sec-cpt crypto challenge
 func (c *Client) SolveSecCpt(ctx context.Context, req SecCptRequest) (*SecCptResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/sec-cpt", DefaultWebBaseURL)
 
@@ -159,7 +148,6 @@ func (c *Client) SolveSecCpt(ctx context.Context, req SecCptRequest) (*SecCptRes
 	return &result, nil
 }
 
-// SolveSBSD solves an SBSD challenge
 func (c *Client) SolveSBSD(ctx context.Context, req SBSDRequest) (*SBSDResponse, error) {
 	url := fmt.Sprintf("%s/api/v1/sbsd", DefaultWebBaseURL)
 
@@ -181,7 +169,6 @@ func (c *Client) SolveSBSD(ctx context.Context, req SBSDRequest) (*SBSDResponse,
 	return &result, nil
 }
 
-// ParseScript parses an Akamai script and returns script data
 func (c *Client) ParseScript(ctx context.Context, scriptContent []byte) (*ScriptData, error) {
 	url := fmt.Sprintf("%s/api/v1/parse", DefaultWebBaseURL)
 

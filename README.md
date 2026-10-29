@@ -1,106 +1,63 @@
-<div align="center">
+# Roolink Go SDK
 
-# 🔗 Roolink Go SDK
+Go client for the Roolink Akamai Web (`web.roolink.io`) and Akamai BMP (`bmp.roolink.io`) APIs.
 
-### Enterprise-grade Akamai sensor generation for Go
+Documentation: https://docs.roolink.io
 
-[![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://golang.org/)
-[![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
+## Install
 
-**[📚 Documentation](https://docs.roolink.io/)** • **[💬 Discord](https://discord.gg/rooapi)**
-
----
-
-</div>
-
-## 🚀 Overview
-
-Production-ready APIs for generating Akamai sensor data across web and mobile platforms. This SDK handles authentication, requests, and response parsing.
-
-### 🎯 Supported Services
-
-| Service | Features |
-| --- | --- |
-| **🌐 Web API** | Sensor generation, pixel challenges, SBSD, sec-cpt solving |
-| **📱 BMP API** | iOS & Android mobile app sensor generation |
-
----
-
-## 📦 Installation
-
-```bash
+```sh
 go get github.com/roolinkio/roolink-go
 ```
 
-## ⚡ Quick Start
+## Usage
 
 ```go
-import roolink "github.com/roolinkio/roolink-go"
+package main
 
-client := roolink.NewClient("your-api-key")
-sensor, err := client.GenerateWebSensor(req)
-```
+import (
+	"context"
+	"log"
 
----
+	roolink "github.com/roolinkio/roolink-go"
+)
 
-## 🌐 Web API
+func main() {
+	ctx := context.Background()
+	client := roolink.NewClient("your-api-key")
 
-```go
-// Sensor Generation
-client.GenerateWebSensor(req)
+	scriptData, err := client.ParseScript(ctx, scriptBytes)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-// Pixel Challenges
-client.GeneratePixel(req)
-
-// Sec-Cpt Challenges
-client.SolveSecCpt(req)
-
-// SBSD Challenges
-client.SolveSBSD(req)
-
-// Script Parsing
-client.ParseScript(scriptContent)
-```
-
----
-
-## 📱 BMP API
-
-```go
-// iOS Sensors (android: false)
-req := roolink.BMPSensorRequest{
-    Android: false,
-}
-client.GenerateBMPSensor(req)
-
-// Android Sensors (android: true)
-req := roolink.BMPSensorRequest{
-    Android: true,
-}
-client.GenerateBMPSensor(req)
-```
-
----
-
-## 🆘 Error Handling
-
-```go
-result, err := client.GenerateWebSensor(req)
-if err != nil {
-    // handle error
+	sensor, err := client.GenerateWebSensor(ctx, roolink.WebSensorRequest{
+		UserAgent:  userAgent,
+		URL:        "https://example.com/",
+		Abck:       abckCookie,
+		BmSz:       bmSzCookie,
+		ScriptData: scriptData,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	_ = sensor.Sensor
 }
 ```
 
----
+## Methods
 
-## 📄 License
+| Method | Endpoint |
+| --- | --- |
+| `ParseScript(ctx, scriptBytes)` | `POST https://web.roolink.io/api/v1/parse` (gzip-compressed by default; disable with `WithCompression(false)`) |
+| `GenerateWebSensor(ctx, WebSensorRequest)` | `POST https://web.roolink.io/api/v1/sensor` |
+| `GeneratePixel(ctx, PixelRequest)` | `POST https://web.roolink.io/api/v1/pixel` |
+| `SolveSecCpt(ctx, SecCptRequest)` | `POST https://web.roolink.io/api/v1/sec-cpt` |
+| `SolveSBSD(ctx, SBSDRequest)` | `POST https://web.roolink.io/api/v1/sbsd` |
+| `GenerateBMPSensor(ctx, BMPSensorRequest)` | `POST https://bmp.roolink.io/api/v1/sensor` (`Android: false` for iOS, `Android: true` for Android) |
 
-MIT License - see [LICENSE](LICENSE) for details.
+Pass `WithHTTPClient(httpClient)` to override the default 30-second HTTP/2 client.
 
----
+## License
 
-<div align="center">
-
-**Built with 💜**
-
-</div>
+MIT — see [LICENSE](LICENSE).

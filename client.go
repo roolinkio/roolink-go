@@ -13,41 +13,33 @@ import (
 )
 
 const (
-	// DefaultTimeout is the default HTTP client timeout
-	DefaultTimeout = 30 * time.Second
-
-	// Base URLs for services
+	DefaultTimeout    = 30 * time.Second
 	DefaultBMPBaseURL = "https://bmp.roolink.io"
 	DefaultWebBaseURL = "https://web.roolink.io"
 )
 
-// Client is the main client for interacting with Roolink services
 type Client struct {
 	apiKey     string
 	httpClient *http.Client
 	compress   bool
 }
 
-// ClientOption is a function that configures a Client
 type ClientOption func(*Client)
 
-// WithHTTPClient sets a custom HTTP client
 func WithHTTPClient(httpClient *http.Client) ClientOption {
 	return func(c *Client) {
 		c.httpClient = httpClient
 	}
 }
 
-// WithCompression sets whether ParseScript gzips the script it sends, which it does by default
+// WithCompression sets whether ParseScript gzips the script payload (enabled by default).
 func WithCompression(compress bool) ClientOption {
 	return func(c *Client) {
 		c.compress = compress
 	}
 }
 
-// NewClient creates a new Roolink client
 func NewClient(apiKey string, opts ...ClientOption) *Client {
-	// Configure HTTP/2 transport
 	transport := &http.Transport{
 		ForceAttemptHTTP2: true,
 		TLSClientConfig:   &tls.Config{},
@@ -69,7 +61,6 @@ func NewClient(apiKey string, opts ...ClientOption) *Client {
 	return client
 }
 
-// doRequest performs a POST request with the API key, gzipping the body if compress is set
 func (c *Client) doRequest(ctx context.Context, url string, body io.Reader, contentType string, compress bool) (*http.Response, error) {
 	if compress {
 		var buf bytes.Buffer
@@ -102,7 +93,6 @@ func (c *Client) doRequest(ctx context.Context, url string, body io.Reader, cont
 	return resp, nil
 }
 
-// parseResponse parses the HTTP response into the target struct
 func parseResponse(resp *http.Response, target interface{}) error {
 	defer resp.Body.Close() //nolint:errcheck // A failed close leaves nothing for the caller to handle.
 
