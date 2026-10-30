@@ -81,6 +81,7 @@ func (c *Client) doRequest(ctx context.Context, url string, body io.Reader, cont
 
 	req.Header.Set("Content-Type", contentType)
 	req.Header.Set("x-api-key", c.apiKey)
+	req.Header.Set("User-Agent", "roolink-go/"+Version)
 	if compress {
 		req.Header.Set("Content-Encoding", "gzip")
 	}
