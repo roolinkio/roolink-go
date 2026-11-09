@@ -1,6 +1,6 @@
 # Roolink Go SDK
 
-Go client for the Roolink Akamai Web (`web.roolink.io`), Akamai BMP (`bmp.roolink.io`) and Kasada (`ksd.roolink.io`) APIs.
+Go client for the Roolink Akamai Web (`web.roolink.io`), Akamai BMP (`bmp.roolink.io`), Kasada (`ksd.roolink.io`) and Imperva (`imperva.roolink.io`) APIs.
 
 Documentation: https://docs.roolink.io
 
@@ -58,6 +58,8 @@ func main() {
 | `GenerateKasadaPayload(ctx, KasadaPayloadRequest)` | `POST https://ksd.roolink.io/api/v1/payload` |
 | `GenerateKasadaCD(ctx, KasadaCDRequest)` | `POST https://ksd.roolink.io/api/v1/cd` |
 | `GenerateKasadaBotID(ctx, KasadaBotIDRequest)` | `POST https://ksd.roolink.io/api/v1/botid` |
+| `GenerateImpervaPayload(ctx, ImpervaPayloadRequest)` | `POST https://imperva.roolink.io/api/v1/payload` |
+| `GenerateImpervaUTMVC(ctx, ImpervaUTMVCRequest)` | `POST https://imperva.roolink.io/api/v1/utmvc` |
 
 Pass `WithHTTPClient(httpClient)` to override the default 30-second HTTP/2 client.
 
@@ -93,6 +95,35 @@ if err != nil {
 	log.Fatal(err)
 }
 _ = string(isHuman)
+```
+
+## Imperva
+
+`GenerateImpervaPayload` returns the Reese84 submission as the JSON bytes the API sent, which the site expects unchanged. Set `Pow` only when the site's GPC request returns a challenge. `GenerateImpervaUTMVC` takes every cookie the site has set as one `document.cookie` string, including the `incap_ses_*` cookies, and returns the `___utmvc` cookie.
+
+```go
+submission, err := client.GenerateImpervaPayload(ctx, roolink.ImpervaPayloadRequest{
+	Script:    sensorScript,
+	ScriptURL: scriptURL,
+	PageURL:   "https://www.example.com/",
+	UserAgent: userAgent,
+	Language:  "en-US,en;q=0.9",
+	Pow:       powChallenge,
+})
+if err != nil {
+	log.Fatal(err)
+}
+// Post submission to scriptURL with d=<host> in the query, and store the token in the reply as the reese84 cookie.
+
+utmvc, err := client.GenerateImpervaUTMVC(ctx, roolink.ImpervaUTMVCRequest{
+	Script:    incapsulaScript,
+	Cookies:   documentCookie,
+	UserAgent: userAgent,
+})
+if err != nil {
+	log.Fatal(err)
+}
+_ = utmvc.Cookie
 ```
 
 ## License
