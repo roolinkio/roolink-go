@@ -13,9 +13,10 @@ import (
 )
 
 const (
-	DefaultTimeout    = 30 * time.Second
-	DefaultBMPBaseURL = "https://bmp.roolink.io"
-	DefaultWebBaseURL = "https://web.roolink.io"
+	DefaultTimeout       = 30 * time.Second
+	DefaultBMPBaseURL    = "https://bmp.roolink.io"
+	DefaultWebBaseURL    = "https://web.roolink.io"
+	DefaultKasadaBaseURL = "https://ksd.roolink.io"
 )
 
 type Client struct {
