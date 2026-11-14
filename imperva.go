@@ -8,30 +8,35 @@ import (
 	"io"
 )
 
+// ImpervaPayloadRequest asks for an Imperva Reese84 payload.
 type ImpervaPayloadRequest struct {
 	Script string `json:"script"`
 	// ScriptURL may be absolute or relative to PageURL.
 	ScriptURL string `json:"scriptUrl"`
 	PageURL   string `json:"pageUrl"`
-	// UserAgent must be the one your requests to the site send, because the payload is built from a collected browser
-	// with that exact User-Agent.
+	// UserAgent must be the one your requests to the site send, because the
+	// payload is built from a collected browser with that exact User-Agent.
 	UserAgent string `json:"userAgent"`
-	// Language is the Accept-Language header your requests send, such as "en-US,en;q=0.9".
+	// Language is the Accept-Language header your requests send, such as
+	// "en-US,en;q=0.9".
 	Language string `json:"language"`
-	// Pow is the site's base64 GPC challenge without the JSON quotes it arrives in. Leave it empty when the site has no
-	// challenge.
+	// Pow is the site's base64 GPC challenge without the JSON quotes it arrives
+	// in. Leave it empty when the site has no challenge.
 	Pow string `json:"pow,omitempty"`
 }
 
+// ImpervaUTMVCRequest asks for an Imperva ___utmvc cookie.
 type ImpervaUTMVCRequest struct {
 	Script string `json:"script"`
-	// Cookies is the site's document.cookie. The API requires it even when it is empty.
+	// Cookies is the site's document.cookie. The API requires it even when it
+	// is empty.
 	Cookies   string `json:"cookies"`
 	UserAgent string `json:"userAgent"`
 }
 
-// ImpervaUTMVCResponse is the ___utmvc cookie, of which only Cookie or SetCookie is sent to the site. The fields
-// after SetCookie describe how the value was built.
+// ImpervaUTMVCResponse is the ___utmvc cookie, of which only Cookie or
+// SetCookie is sent to the site. The fields after SetCookie describe how the
+// value was built.
 type ImpervaUTMVCResponse struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
@@ -48,17 +53,17 @@ type ImpervaUTMVCResponse struct {
 	WindowKeyCount int    `json:"windowKeyCount"`
 }
 
-// GenerateImpervaPayload returns the Reese84 submission as the API sent it, because it must be posted to the
-// challenge endpoint unchanged.
+// GenerateImpervaPayload returns the Reese84 submission as the API sent it,
+// because it must be posted to the challenge endpoint unchanged.
 func (c *Client) GenerateImpervaPayload(ctx context.Context, req ImpervaPayloadRequest) ([]byte, error) {
-	url := fmt.Sprintf("%s/api/v1/payload", DefaultImpervaBaseURL)
+	url := DefaultImpervaBaseURL + "/api/v1/payload"
 
-	jsonData, err := json.Marshal(req)
+	payload, err := json.Marshal(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
+		return nil, fmt.Errorf("marshal request: %w", err)
 	}
 
-	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json", false)
+	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(payload), "application/json", false)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +71,7 @@ func (c *Client) GenerateImpervaPayload(ctx context.Context, req ImpervaPayloadR
 	defer resp.Body.Close() //nolint:errcheck // A failed close leaves nothing for the caller to handle.
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read response: %w", err)
+		return nil, fmt.Errorf("read response: %w", err)
 	}
 	if resp.StatusCode >= 400 {
 		return nil, fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(body))
@@ -75,15 +80,16 @@ func (c *Client) GenerateImpervaPayload(ctx context.Context, req ImpervaPayloadR
 	return body, nil
 }
 
+// GenerateImpervaUTMVC returns the ___utmvc cookie for req.
 func (c *Client) GenerateImpervaUTMVC(ctx context.Context, req ImpervaUTMVCRequest) (*ImpervaUTMVCResponse, error) {
-	url := fmt.Sprintf("%s/api/v1/utmvc", DefaultImpervaBaseURL)
+	url := DefaultImpervaBaseURL + "/api/v1/utmvc"
 
-	jsonData, err := json.Marshal(req)
+	payload, err := json.Marshal(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
+		return nil, fmt.Errorf("marshal request: %w", err)
 	}
 
-	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json", false)
+	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(payload), "application/json", false)
 	if err != nil {
 		return nil, err
 	}

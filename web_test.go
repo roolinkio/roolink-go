@@ -36,7 +36,8 @@ func TestGeneratePixelReturnsTextBody(t *testing.T) {
 func TestCompression(t *testing.T) {
 	const script = "var _ac=function(){};"
 
-	// send parses the script with a client made with opts, and returns the request's header and body.
+	// send parses the script with a client made with opts, and returns the
+	// request's header and body.
 	send := func(opts ...ClientOption) (http.Header, []byte) {
 		var header http.Header
 		var body []byte

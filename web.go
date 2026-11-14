@@ -8,6 +8,8 @@ import (
 	"io"
 )
 
+// ScriptData is what ParseScript reads from an Akamai Web script, which
+// WebSensorRequest needs.
 type ScriptData struct {
 	Ver string `json:"ver"`
 	Key int64  `json:"key"`
@@ -15,6 +17,7 @@ type ScriptData struct {
 	Din []int  `json:"din"`
 }
 
+// WebSensorRequest asks for an Akamai Web sensor.
 type WebSensorRequest struct {
 	UserAgent  string      `json:"userAgent"`
 	URL        string      `json:"url"`
@@ -31,20 +34,24 @@ type WebSensorRequest struct {
 	ScriptURL  string      `json:"scriptUrl,omitempty"`
 }
 
+// WebSensorResponse is an Akamai Web sensor to post to the site.
 type WebSensorResponse struct {
 	Sensor string `json:"sensor"`
 }
 
+// PixelRequest asks for an Akamai pixel sensor.
 type PixelRequest struct {
 	UserAgent            string `json:"userAgent"`
 	Bazadebezolkohpepadr int    `json:"bazadebezolkohpepadr"`
 	Hash                 string `json:"hash"`
 }
 
+// PixelResponse is an Akamai pixel sensor.
 type PixelResponse struct {
 	Sensor string `json:"sensor"`
 }
 
+// SecCptRequest is an Akamai sec-cpt challenge to solve.
 type SecCptRequest struct {
 	SecCpChallenge string `json:"sec-cp-challenge,omitempty"`
 	Provider       string `json:"provider,omitempty"`
@@ -60,11 +67,13 @@ type SecCptRequest struct {
 	Cookie         string `json:"cookie"`
 }
 
+// SecCptResponse is the solved sec-cpt challenge to post to the site.
 type SecCptResponse struct {
 	Token   string   `json:"token"`
 	Answers []string `json:"answers"`
 }
 
+// SBSDRequest asks for an Akamai SBSD payload.
 type SBSDRequest struct {
 	Vid        string `json:"vid"`
 	UserAgent  string `json:"userAgent"`
@@ -76,19 +85,21 @@ type SBSDRequest struct {
 	Language   string `json:"language,omitempty"`
 }
 
+// SBSDResponse is the SBSD request body to post to the site.
 type SBSDResponse struct {
 	Body string `json:"body"`
 }
 
+// GenerateWebSensor returns an Akamai Web sensor for req.
 func (c *Client) GenerateWebSensor(ctx context.Context, req WebSensorRequest) (*WebSensorResponse, error) {
-	url := fmt.Sprintf("%s/api/v1/sensor", DefaultWebBaseURL)
+	url := DefaultWebBaseURL + "/api/v1/sensor"
 
-	jsonData, err := json.Marshal(req)
+	payload, err := json.Marshal(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
+		return nil, fmt.Errorf("marshal request: %w", err)
 	}
 
-	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json", false)
+	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(payload), "application/json", false)
 	if err != nil {
 		return nil, err
 	}
@@ -103,14 +114,14 @@ func (c *Client) GenerateWebSensor(ctx context.Context, req WebSensorRequest) (*
 
 // GeneratePixel posts a pixel request and reads the text/plain sensor response.
 func (c *Client) GeneratePixel(ctx context.Context, req PixelRequest) (*PixelResponse, error) {
-	url := fmt.Sprintf("%s/api/v1/pixel", DefaultWebBaseURL)
+	url := DefaultWebBaseURL + "/api/v1/pixel"
 
-	jsonData, err := json.Marshal(req)
+	payload, err := json.Marshal(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
+		return nil, fmt.Errorf("marshal request: %w", err)
 	}
 
-	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json", false)
+	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(payload), "application/json", false)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +129,7 @@ func (c *Client) GeneratePixel(ctx context.Context, req PixelRequest) (*PixelRes
 	defer resp.Body.Close() //nolint:errcheck // A failed close leaves nothing for the caller to handle.
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read response: %w", err)
+		return nil, fmt.Errorf("read response: %w", err)
 	}
 	if resp.StatusCode >= 400 {
 		return nil, fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(body))
@@ -127,15 +138,16 @@ func (c *Client) GeneratePixel(ctx context.Context, req PixelRequest) (*PixelRes
 	return &PixelResponse{Sensor: string(body)}, nil
 }
 
+// SolveSecCpt solves the sec-cpt challenge in req.
 func (c *Client) SolveSecCpt(ctx context.Context, req SecCptRequest) (*SecCptResponse, error) {
-	url := fmt.Sprintf("%s/api/v1/sec-cpt", DefaultWebBaseURL)
+	url := DefaultWebBaseURL + "/api/v1/sec-cpt"
 
-	jsonData, err := json.Marshal(req)
+	payload, err := json.Marshal(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
+		return nil, fmt.Errorf("marshal request: %w", err)
 	}
 
-	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json", false)
+	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(payload), "application/json", false)
 	if err != nil {
 		return nil, err
 	}
@@ -148,15 +160,16 @@ func (c *Client) SolveSecCpt(ctx context.Context, req SecCptRequest) (*SecCptRes
 	return &result, nil
 }
 
+// SolveSBSD returns the SBSD payload for req.
 func (c *Client) SolveSBSD(ctx context.Context, req SBSDRequest) (*SBSDResponse, error) {
-	url := fmt.Sprintf("%s/api/v1/sbsd", DefaultWebBaseURL)
+	url := DefaultWebBaseURL + "/api/v1/sbsd"
 
-	jsonData, err := json.Marshal(req)
+	payload, err := json.Marshal(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
+		return nil, fmt.Errorf("marshal request: %w", err)
 	}
 
-	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json", false)
+	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(payload), "application/json", false)
 	if err != nil {
 		return nil, err
 	}
@@ -169,8 +182,9 @@ func (c *Client) SolveSBSD(ctx context.Context, req SBSDRequest) (*SBSDResponse,
 	return &result, nil
 }
 
+// ParseScript reads the values a sensor needs from an Akamai Web script.
 func (c *Client) ParseScript(ctx context.Context, scriptContent []byte) (*ScriptData, error) {
-	url := fmt.Sprintf("%s/api/v1/parse", DefaultWebBaseURL)
+	url := DefaultWebBaseURL + "/api/v1/parse"
 
 	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(scriptContent), "text/plain", c.compress)
 	if err != nil {

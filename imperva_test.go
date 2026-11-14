@@ -9,7 +9,8 @@ import (
 )
 
 func TestGenerateImpervaPayload(t *testing.T) {
-	// Callers post the submission to Imperva unchanged, so the client must return the bytes the API sent.
+	// Callers post the submission to Imperva unchanged, so the client must
+	// return the bytes the API sent.
 	const submission = `{"solution":{"interrogation":{"p":"AAEC/w==","st":1788893087,"sr":3420118839,"cr":2045817226,"og":2},"version":"stable"},"old_token":null,"error":null,"errors":[],"performance":{"1030820235":41,"4203433130":12,"total":43}}`
 
 	for _, tc := range []struct {
@@ -54,7 +55,8 @@ func TestGenerateImpervaPayload(t *testing.T) {
 }
 
 func TestGenerateImpervaPayloadError(t *testing.T) {
-	// An error body is JSON as well, and posting it to Imperva as a submission would fail without saying why.
+	// An error body is JSON as well, and posting it to Imperva as a submission
+	// would fail without saying why.
 	const reply = `{"code":"device_not_found","error":"no collected browser has this User-Agent"}`
 	client := NewClient("roo_test", WithHTTPClient(&http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
 		return &http.Response{
@@ -100,7 +102,8 @@ func TestGenerateImpervaUTMVC(t *testing.T) {
 			want: `{"script":"(function(){})();","cookies":"incap_ses_1234_567890=abc; visid_incap_567890=def","userAgent":"Mozilla/5.0"}`,
 		},
 		{
-			// The API requires cookies, so an empty document.cookie must still be sent.
+			// The API requires cookies, so an empty document.cookie must still
+			// be sent.
 			name: "without cookies",
 			req:  ImpervaUTMVCRequest{Script: "(function(){})();", UserAgent: "Mozilla/5.0"},
 			want: `{"script":"(function(){})();","cookies":"","userAgent":"Mozilla/5.0"}`,

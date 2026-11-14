@@ -7,6 +7,7 @@ import (
 	"fmt"
 )
 
+// BMPSensorRequest asks for an Akamai BMP sensor for a mobile app.
 type BMPSensorRequest struct {
 	AppName  string `json:"app"`
 	Proxy    string `json:"proxy"`
@@ -16,12 +17,15 @@ type BMPSensorRequest struct {
 	IPad     bool   `json:"ipad,omitempty"`
 }
 
+// Cookie is a cookie the app must set before it sends the sensor.
 type Cookie struct {
 	Name   string `json:"name"`
 	Value  string `json:"value"`
 	Domain string `json:"domain"`
 }
 
+// BMPSensorResponse is a BMP sensor and the device it was built for. The iOS
+// and Android fields are set only for that platform.
 type BMPSensorResponse struct {
 	Sensor   string `json:"sensor"`
 	Platform string `json:"platform"`
@@ -45,15 +49,16 @@ type BMPSensorResponse struct {
 	Language       string `json:"language"`
 }
 
+// GenerateBMPSensor returns an Akamai BMP sensor for req.
 func (c *Client) GenerateBMPSensor(ctx context.Context, req BMPSensorRequest) (*BMPSensorResponse, error) {
-	url := fmt.Sprintf("%s/api/v1/sensor", DefaultBMPBaseURL)
+	url := DefaultBMPBaseURL + "/api/v1/sensor"
 
-	jsonData, err := json.Marshal(req)
+	payload, err := json.Marshal(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal request: %w", err)
+		return nil, fmt.Errorf("marshal request: %w", err)
 	}
 
-	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(jsonData), "application/json", false)
+	resp, err := c.doRequest(ctx, url, bytes.NewBuffer(payload), "application/json", false)
 	if err != nil {
 		return nil, err
 	}

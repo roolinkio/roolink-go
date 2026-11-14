@@ -1,3 +1,5 @@
+// Package roolink is the Go client for the Roolink APIs, which solve Akamai Web,
+// Akamai BMP, Kasada, and Imperva bot challenges.
 package roolink
 
 import (
@@ -12,6 +14,8 @@ import (
 	"time"
 )
 
+// DefaultTimeout bounds each request of a client built without
+// WithHTTPClient. The base URLs are the APIs' production endpoints.
 const (
 	DefaultTimeout        = 30 * time.Second
 	DefaultBMPBaseURL     = "https://bmp.roolink.io"
@@ -20,27 +24,34 @@ const (
 	DefaultImpervaBaseURL = "https://imperva.roolink.io"
 )
 
+// Client calls the Roolink APIs with one API key. It is safe for concurrent
+// use.
 type Client struct {
 	apiKey     string
 	httpClient *http.Client
 	compress   bool
 }
 
+// ClientOption configures a Client in NewClient.
 type ClientOption func(*Client)
 
+// WithHTTPClient makes the client send requests with httpClient instead of its
+// own.
 func WithHTTPClient(httpClient *http.Client) ClientOption {
 	return func(c *Client) {
 		c.httpClient = httpClient
 	}
 }
 
-// WithCompression sets whether ParseScript gzips the script payload (enabled by default).
+// WithCompression sets whether ParseScript gzips the script payload (enabled by
+// default).
 func WithCompression(compress bool) ClientOption {
 	return func(c *Client) {
 		c.compress = compress
 	}
 }
 
+// NewClient returns a Client that authenticates with apiKey.
 func NewClient(apiKey string, opts ...ClientOption) *Client {
 	transport := &http.Transport{
 		ForceAttemptHTTP2: true,
@@ -68,17 +79,17 @@ func (c *Client) doRequest(ctx context.Context, url string, body io.Reader, cont
 		var buf bytes.Buffer
 		zw := gzip.NewWriter(&buf)
 		if _, err := io.Copy(zw, body); err != nil {
-			return nil, fmt.Errorf("failed to compress request: %w", err)
+			return nil, fmt.Errorf("compress request: %w", err)
 		}
 		if err := zw.Close(); err != nil {
-			return nil, fmt.Errorf("failed to compress request: %w", err)
+			return nil, fmt.Errorf("compress request: %w", err)
 		}
 		body = &buf
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+		return nil, fmt.Errorf("create request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", contentType)
@@ -90,23 +101,24 @@ func (c *Client) doRequest(ctx context.Context, url string, body io.Reader, cont
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to execute request: %w", err)
+		return nil, fmt.Errorf("execute request: %w", err)
 	}
 
 	return resp, nil
 }
 
-func parseResponse(resp *http.Response, target interface{}) error {
+func parseResponse(resp *http.Response, target any) error {
 	defer resp.Body.Close() //nolint:errcheck // A failed close leaves nothing for the caller to handle.
 
 	if resp.StatusCode >= 400 {
-		bodyBytes, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(bodyBytes))
+		// The body only adds detail to the status, so a failed read omits it.
+		body, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(body))
 	}
 
 	if target != nil {
 		if err := json.NewDecoder(resp.Body).Decode(target); err != nil {
-			return fmt.Errorf("failed to decode response: %w", err)
+			return fmt.Errorf("decode response: %w", err)
 		}
 	}
 

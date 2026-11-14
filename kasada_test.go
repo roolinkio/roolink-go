@@ -87,7 +87,8 @@ func TestGenerateKasadaBotID(t *testing.T) {
 		t.Errorf("response = %+v, want %+v", *resp, want)
 	}
 
-	// The x-is-human header is the response marshaled back to JSON, which must match what the API sent.
+	// The x-is-human header is the response marshaled back to JSON, which must
+	// match what the API sent.
 	got, err := json.Marshal(resp)
 	if err != nil {
 		t.Fatalf("Marshal: %v", err)

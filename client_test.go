@@ -10,7 +10,8 @@ import (
 	"testing"
 )
 
-// jsonClient returns a client whose one request must POST want as JSON to url, and which answers reply.
+// jsonClient returns a client whose one request must POST want as JSON to url,
+// and which answers reply.
 func jsonClient(t *testing.T, url, want, reply string) *Client {
 	t.Helper()
 	return NewClient("roo_test", WithHTTPClient(&http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
