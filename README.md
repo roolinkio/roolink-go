@@ -1,8 +1,10 @@
 # Roolink Go SDK
 
-Go client for the Roolink Akamai Web (`web.roolink.io`), Akamai BMP (`bmp.roolink.io`), Kasada (`ksd.roolink.io`) and Imperva (`imperva.roolink.io`) APIs.
+Go client for the Roolink Akamai Web (`web.roolink.io`), Akamai BMP
+(`bmp.roolink.io`), Kasada (`ksd.roolink.io`) and Imperva (`imperva.roolink.io`)
+APIs.
 
-Documentation: https://docs.roolink.io
+Documentation: <https://docs.roolink.io>
 
 ## Install
 
@@ -61,11 +63,15 @@ func main() {
 | `GenerateImpervaPayload(ctx, ImpervaPayloadRequest)` | `POST https://imperva.roolink.io/api/v1/payload` |
 | `GenerateImpervaUTMVC(ctx, ImpervaUTMVCRequest)` | `POST https://imperva.roolink.io/api/v1/utmvc` |
 
-Pass `WithHTTPClient(httpClient)` to override the default 30-second HTTP/2 client.
+Pass `WithHTTPClient(httpClient)` to override the default 30-second HTTP/2
+client.
 
 ## Kasada
 
-`GenerateKasadaPayload` decodes the payload from base64, so `Payload` is the `/tl` request body as is. Each protected request needs a new `GenerateKasadaCD`, whose `Payload` is the `x-kpsdk-cd` header value. For Vercel BotID, the `x-is-human` header is the response marshaled with `encoding/json`.
+`GenerateKasadaPayload` decodes the payload from base64, so `Payload` is the
+`/tl` request body as is. Each protected request needs a new `GenerateKasadaCD`,
+whose `Payload` is the `x-kpsdk-cd` header value. For Vercel BotID, the
+`x-is-human` header is the response marshaled with `encoding/json`.
 
 ```go
 answer, err := client.GenerateKasadaPayload(ctx, roolink.KasadaPayloadRequest{
@@ -99,7 +105,11 @@ _ = string(isHuman)
 
 ## Imperva
 
-`GenerateImpervaPayload` returns the Reese84 submission as the JSON bytes the API sent, which the site expects unchanged. Set `Pow` only when the site's GPC request returns a challenge. `GenerateImpervaUTMVC` takes every cookie the site has set as one `document.cookie` string, including the `incap_ses_*` cookies, and returns the `___utmvc` cookie.
+`GenerateImpervaPayload` returns the Reese84 submission as the JSON bytes the
+API sent, which the site expects unchanged. Set `Pow` only when the site's GPC
+request returns a challenge. `GenerateImpervaUTMVC` takes every cookie the site
+has set as one `document.cookie` string, including the `incap_ses_*` cookies,
+and returns the `___utmvc` cookie.
 
 ```go
 submission, err := client.GenerateImpervaPayload(ctx, roolink.ImpervaPayloadRequest{
@@ -128,4 +138,4 @@ _ = utmvc.Cookie
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT - see [LICENSE](LICENSE).
