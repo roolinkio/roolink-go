@@ -10,10 +10,6 @@ import (
 	"testing"
 )
 
-type roundTripFunc func(*http.Request) (*http.Response, error)
-
-func (f roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
-
 func TestGeneratePixelReturnsTextBody(t *testing.T) {
 	const body = "ap=true&bt=0&fonts=1&fh=abc"
 	client := NewClient("roo_test", WithHTTPClient(&http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
@@ -29,7 +25,7 @@ func TestGeneratePixelReturnsTextBody(t *testing.T) {
 		t.Fatalf("GeneratePixel: %v", err)
 	}
 	if resp.Sensor != body {
-		t.Fatalf("Sensor = %q, want %q", resp.Sensor, body)
+		t.Errorf("Sensor = %q, want %q", resp.Sensor, body)
 	}
 }
 

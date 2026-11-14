@@ -126,7 +126,8 @@ func (c *Client) GeneratePixel(ctx context.Context, req PixelRequest) (*PixelRes
 		return nil, err
 	}
 
-	defer resp.Body.Close() //nolint:errcheck // A failed close leaves nothing for the caller to handle.
+	// A failed close leaves nothing for the caller to handle.
+	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("read response: %w", err)

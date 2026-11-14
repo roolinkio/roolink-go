@@ -108,7 +108,8 @@ func (c *Client) doRequest(ctx context.Context, url string, body io.Reader, cont
 }
 
 func parseResponse(resp *http.Response, target any) error {
-	defer resp.Body.Close() //nolint:errcheck // A failed close leaves nothing for the caller to handle.
+	// A failed close leaves nothing for the caller to handle.
+	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
 		// The body only adds detail to the status, so a failed read omits it.

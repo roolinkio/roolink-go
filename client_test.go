@@ -10,6 +10,11 @@ import (
 	"testing"
 )
 
+// roundTripFunc lets a function stand in for the client's transport.
+type roundTripFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
+
 // jsonClient returns a client whose one request must POST want as JSON to url,
 // and which answers reply.
 func jsonClient(t *testing.T, url, want, reply string) *Client {

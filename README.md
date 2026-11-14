@@ -6,6 +6,17 @@ APIs.
 
 Documentation: <https://docs.roolink.io>
 
+## Table of Contents
+
+<!-- toc -->
+- [Install](#install)
+- [Usage](#usage)
+- [Methods](#methods)
+- [Kasada](#kasada)
+- [Imperva](#imperva)
+- [License](#license)
+<!-- tocstop -->
+
 ## Install
 
 ```sh
