@@ -68,8 +68,7 @@ func (c *Client) GenerateImpervaPayload(ctx context.Context, req ImpervaPayloadR
 		return nil, err
 	}
 
-	// A failed close leaves nothing for the caller to handle.
-	defer resp.Body.Close()
+	defer closeBody(resp.Body)
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("read response: %w", err)

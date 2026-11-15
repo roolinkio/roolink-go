@@ -108,8 +108,7 @@ func (c *Client) doRequest(ctx context.Context, url string, body io.Reader, cont
 }
 
 func parseResponse(resp *http.Response, target any) error {
-	// A failed close leaves nothing for the caller to handle.
-	defer resp.Body.Close()
+	defer closeBody(resp.Body)
 
 	if resp.StatusCode >= 400 {
 		// The body only adds detail to the status, so a failed read omits it.
@@ -124,4 +123,10 @@ func parseResponse(resp *http.Response, target any) error {
 	}
 
 	return nil
+}
+
+// closeBody closes a response body the caller is done with. It ignores the
+// error, because a failed close leaves nothing for the caller to handle.
+func closeBody(body io.Closer) {
+	_ = body.Close()
 }
