@@ -9,12 +9,14 @@ Documentation: <https://docs.roolink.io>
 ## Table of Contents
 
 <!-- toc -->
+
 - [Install](#install)
 - [Usage](#usage)
 - [Methods](#methods)
 - [Kasada](#kasada)
 - [Imperva](#imperva)
 - [License](#license)
+
 <!-- tocstop -->
 
 ## Install
@@ -60,19 +62,19 @@ func main() {
 
 ## Methods
 
-| Method | Endpoint |
-| --- | --- |
-| `ParseScript(ctx, scriptBytes)` | `POST https://web.roolink.io/api/v1/parse` (gzip-compressed by default; disable with `WithCompression(false)`) |
-| `GenerateWebSensor(ctx, WebSensorRequest)` | `POST https://web.roolink.io/api/v1/sensor` |
-| `GeneratePixel(ctx, PixelRequest)` | `POST https://web.roolink.io/api/v1/pixel` |
-| `SolveSecCpt(ctx, SecCptRequest)` | `POST https://web.roolink.io/api/v1/sec-cpt` |
-| `SolveSBSD(ctx, SBSDRequest)` | `POST https://web.roolink.io/api/v1/sbsd` |
-| `GenerateBMPSensor(ctx, BMPSensorRequest)` | `POST https://bmp.roolink.io/api/v1/sensor` (`Android: false` for iOS, `Android: true` for Android) |
-| `GenerateKasadaPayload(ctx, KasadaPayloadRequest)` | `POST https://ksd.roolink.io/api/v1/payload` |
-| `GenerateKasadaCD(ctx, KasadaCDRequest)` | `POST https://ksd.roolink.io/api/v1/cd` |
-| `GenerateKasadaBotID(ctx, KasadaBotIDRequest)` | `POST https://ksd.roolink.io/api/v1/botid` |
-| `GenerateImpervaPayload(ctx, ImpervaPayloadRequest)` | `POST https://imperva.roolink.io/api/v1/payload` |
-| `GenerateImpervaUTMVC(ctx, ImpervaUTMVCRequest)` | `POST https://imperva.roolink.io/api/v1/utmvc` |
+| Method                                               | Endpoint                                                                                                       |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `ParseScript(ctx, scriptBytes)`                      | `POST https://web.roolink.io/api/v1/parse` (gzip-compressed by default; disable with `WithCompression(false)`) |
+| `GenerateWebSensor(ctx, WebSensorRequest)`           | `POST https://web.roolink.io/api/v1/sensor`                                                                    |
+| `GeneratePixel(ctx, PixelRequest)`                   | `POST https://web.roolink.io/api/v1/pixel`                                                                     |
+| `SolveSecCpt(ctx, SecCptRequest)`                    | `POST https://web.roolink.io/api/v1/sec-cpt`                                                                   |
+| `SolveSBSD(ctx, SBSDRequest)`                        | `POST https://web.roolink.io/api/v1/sbsd`                                                                      |
+| `GenerateBMPSensor(ctx, BMPSensorRequest)`           | `POST https://bmp.roolink.io/api/v1/sensor` (`Android: false` for iOS, `Android: true` for Android)            |
+| `GenerateKasadaPayload(ctx, KasadaPayloadRequest)`   | `POST https://ksd.roolink.io/api/v1/payload`                                                                   |
+| `GenerateKasadaCD(ctx, KasadaCDRequest)`             | `POST https://ksd.roolink.io/api/v1/cd`                                                                        |
+| `GenerateKasadaBotID(ctx, KasadaBotIDRequest)`       | `POST https://ksd.roolink.io/api/v1/botid`                                                                     |
+| `GenerateImpervaPayload(ctx, ImpervaPayloadRequest)` | `POST https://imperva.roolink.io/api/v1/payload`                                                               |
+| `GenerateImpervaUTMVC(ctx, ImpervaUTMVCRequest)`     | `POST https://imperva.roolink.io/api/v1/utmvc`                                                                 |
 
 Pass `WithHTTPClient(httpClient)` to override the default 30-second HTTP/2
 client.
